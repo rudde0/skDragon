@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import me.despical.commons.reflection.XReflection;
 import org.bukkit.Bukkit;
 
 public final class ReflectionUtils {
@@ -292,8 +294,8 @@ public final class ReflectionUtils {
    }
 
    public enum PackageType {
-      MINECRAFT_SERVER("MINECRAFT_SERVER", 0, "net.minecraft.server." + getServerVersion()),
-      CRAFTBUKKIT("CRAFTBUKKIT", 1, "org.bukkit.craftbukkit." + getServerVersion()),
+      MINECRAFT_SERVER("MINECRAFT_SERVER", 0, "net.minecraft.server"),
+      CRAFTBUKKIT("CRAFTBUKKIT", 1, "org.bukkit.craftbukkit"),
       CRAFTBUKKIT_BLOCK("CRAFTBUKKIT_BLOCK", 2, CRAFTBUKKIT, "block"),
       CRAFTBUKKIT_CHUNKIO("CRAFTBUKKIT_CHUNKIO", 3, CRAFTBUKKIT, "chunkio"),
       CRAFTBUKKIT_COMMAND("CRAFTBUKKIT_COMMAND", 4, CRAFTBUKKIT, "command"),
@@ -353,12 +355,11 @@ public final class ReflectionUtils {
       }
 
       public static String getServerVersion() {
-         String name = Bukkit.getServer().getClass().getPackage().getName();
-         return name.substring(name.lastIndexOf(".") + 1);
+         return XReflection.findNMSVersionString();
       }
 
       public static int getServerVersionMinor(){
-         return Integer.parseInt(getServerVersion().split("_")[1]);
+         return XReflection.MINOR_NUMBER;
       }
    }
 }
