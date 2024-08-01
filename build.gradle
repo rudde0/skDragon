@@ -7,8 +7,8 @@ plugins {
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
-def ver = 5
-def mcver = '1.20.2'
+def ver = 6
+def mcver = '1.21'
 def javaVer = JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility = javaVer
 
@@ -27,6 +27,7 @@ repositories {
     maven {url 'https://repo.fusesource.com/nexus/content/repositories/releases-3rd-party/'}
     maven {url 'https://jitpack.io'}
     maven {url 'https://repo.maven.apache.org/maven2/'}
+    maven { url 'https://jitpack.io' }
     //maven {url 'https://maven.phiwa.eu/'} // borked cert?
 }
 
@@ -48,6 +49,7 @@ dependencies {
     implementation 'commons-lang:commons-lang:2.6'
     implementation 'com.google.common:google-collect:1.0'
     implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
+    shade 'com.github.Despical:Commons:1.8.1'
     shade 'org.ow2.asm:asm:4.0'
     shade 'com.esotericsoftware:reflectasm:1.11.9'
     compileOnly "io.papermc.paper:paper-api:${mcver}-R0.1-SNAPSHOT"
@@ -65,7 +67,7 @@ shadowJar {
 
 task relocateShadowJar(type: ConfigureShadowRelocation) {
     target = tasks.shadowJar
-    prefix = project.group + '.' + project.name + '.shaded'
+    prefix = 'shaded'
 }
 
 artifacts {

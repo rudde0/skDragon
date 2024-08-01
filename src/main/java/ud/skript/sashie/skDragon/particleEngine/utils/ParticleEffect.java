@@ -1264,7 +1264,7 @@ public enum ParticleEffect {
                      Method toNMS;
                      if (this.effect != ParticleEffect.fallingdust && this.effect != ParticleEffect.blockcrack && this.effect != ParticleEffect.blockdust) {
                         if (this.effect != ParticleEffect.legacyfallingdust && this.effect != ParticleEffect.legacyblockcrack && this.effect != ParticleEffect.legacyblockdust) {
-                           if (this.effect == ParticleEffect.itemcrack) {
+                        if (this.effect == ParticleEffect.itemcrack) {
                               ItemStack item = new ItemStack(this.data.getMaterial());
                               item.setDurability(this.data.getData());
                               toNMS = ReflectionUtils.getMethod("CraftParticle", ReflectionUtils.PackageType.CRAFTBUKKIT, "createParticleParam", Particle.class, ItemStack.class);
