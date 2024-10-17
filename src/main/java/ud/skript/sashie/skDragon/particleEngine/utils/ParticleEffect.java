@@ -1163,19 +1163,22 @@ public enum ParticleEffect {
                   packet = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("Packet");
                }else{
                   packetClass = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL_GAME.getClass("PacketPlayOutWorldParticles");
-                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("EntityPlayer"));
-                  playerConnectionIndex = playerConnection.getIndex("c");
-                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("PlayerConnection"));
+                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("ServerPlayer"));
+                  try {
+                     playerConnectionIndex = playerConnection.getIndex("c");
+                  } catch (Exception ignored) {
+                     playerConnectionIndex = playerConnection.getIndex("connection");
+                  }
+                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("ServerPlayerConnection"));
                   packet = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL.getClass("Packet");
                }
 
-               if (version < 18) {
-                  sendPacketIndex = sendPacket.getIndex("sendPacket", packet);
-               } else if (version == 20) {
+               try {
                   sendPacketIndex = sendPacket.getIndex("b", packet);
-               } else {
-                  sendPacketIndex = sendPacket.getIndex(version < 18 ? "sendPacket" : "a", packet);
+               } catch (Exception ignored) {
+                  sendPacketIndex = sendPacket.getIndex("send", packet);
                }
+
 
                Class particleParam;
                if(version >= 15){
@@ -1340,14 +1343,12 @@ public enum ParticleEffect {
          } else {
             String worldName = center.getWorld().getName();
             double squared = range * range;
-            Iterator var8 = Bukkit.getOnlinePlayers().iterator();
 
-            while(var8.hasNext()) {
-               Player player = (Player)var8.next();
-               if (player.getWorld().getName().equals(worldName) && !(player.getLocation().distanceSquared(center) > squared)) {
-                  this.sendTo(center, player);
-               }
-            }
+             for (Player player : Bukkit.getOnlinePlayers()) {
+                 if (player.getWorld().getName().equals(worldName) && !(player.getLocation().distanceSquared(center) > squared)) {
+                     this.sendTo(center, player);
+                 }
+             }
 
          }
       }

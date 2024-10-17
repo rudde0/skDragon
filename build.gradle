@@ -8,7 +8,7 @@ plugins {
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
 def ver = 6
-def mcver = '1.21'
+def mcver = '1.19'
 def javaVer = JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility = javaVer
 
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.google.common:google-collect:1.0'
     implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
     shade 'com.github.Despical:Commons:1.8.1'
-    shade 'org.ow2.asm:asm:4.0'
+    shade 'org.ow2.asm:asm:9.7'
     shade 'com.esotericsoftware:reflectasm:1.11.9'
     compileOnly "io.papermc.paper:paper-api:${mcver}-R0.1-SNAPSHOT"
     compileOnly 'com.mojang:authlib:1.11'
