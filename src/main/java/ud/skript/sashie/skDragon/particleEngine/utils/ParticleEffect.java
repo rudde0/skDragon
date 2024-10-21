@@ -125,6 +125,7 @@ public enum ParticleEffect {
    legacyblockcrack("legacyblockcrack", "13: 53 -> 14: 61 -> 15: 65 -> 16: 75 -> 17: 92 -> 18: 91", ParticleProperty.REQUIRES_DATA),
    legacyblockdust("legacyblockdust", "13: 54 -> 14: 62 -> 15: 66 -> 16: 76 -> 17: 93 -> 18: 92", ParticleProperty.DIRECTIONAL, ParticleProperty.REQUIRES_DATA),
    legacyfallingdust("legacyfallingdust", "13: 55 -> 14: 63 -> 15: 67 -> 16: 77 -> 17: 94 -> 18: 93", ParticleProperty.REQUIRES_DATA),
+   item("item", "31", ParticleProperty.REQUIRES_DATA),
    NULL("null", "99");
 
    public static final Map<String, ParticleEffect> NAME_MAP = new HashMap<>();
