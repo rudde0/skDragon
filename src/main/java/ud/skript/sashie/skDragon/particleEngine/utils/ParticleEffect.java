@@ -1152,24 +1152,16 @@ public enum ParticleEffect {
                version = ReflectionUtils.PackageType.getServerVersionMinor();
                getHandle = ReflectionUtils.getMethod("CraftPlayer", ReflectionUtils.PackageType.CRAFTBUKKIT_ENTITY, "getHandle");
 
-               Class packetClass, packet;
-               if(version < 17){
-                  packetClass = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass(version < 7 ? "Packet63WorldParticles" : "PacketPlayOutWorldParticles");
-                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("EntityPlayer"));
-                  playerConnectionIndex = playerConnection.getIndex("playerConnection");
-                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("PlayerConnection"));
-                  packet = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("Packet");
-               }else{
-                  packetClass = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL_GAME.getClass("ClientboundLevelParticlesPacket");
-                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("ServerPlayer"));
-                  try {
-                     playerConnectionIndex = playerConnection.getIndex("c");
-                  } catch (Exception ignored) {
-                     playerConnectionIndex = playerConnection.getIndex("connection");
-                  }
-                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("ServerPlayerConnection"));
-                  packet = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL.getClass("Packet");
+               Class<?> packetClass, packet;
+               packetClass = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL_GAME.getClass("ClientboundLevelParticlesPacket");
+               playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("ServerPlayer"));
+               try {
+                  playerConnectionIndex = playerConnection.getIndex("c");
+               } catch (Exception ignored) {
+                  playerConnectionIndex = playerConnection.getIndex("connection");
                }
+               sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("ServerPlayerConnection"));
+               packet = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL.getClass("Packet");
 
                try {
                   sendPacketIndex = sendPacket.getIndex("b", packet);
@@ -1177,16 +1169,8 @@ public enum ParticleEffect {
                   sendPacketIndex = sendPacket.getIndex("send", packet);
                }
 
-               if(version >= 15){
-                  enumParticle = ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES.getClass("ParticleType");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, enumParticle, boolean.class, boolean.class, double.class, double.class, double.class, float.class, float.class, float.class, float.class, int.class);
-               } else if (version >= 13) {
-                  enumParticle = ReflectionUtils.PackageType.CRAFTBUKKIT.getClass("CraftParticle");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, Boolean.class, Float.class, Float.class, Float.class, Float.class, Float.class, Float.class, Float.class, Integer.class);
-               } else {
-                  enumParticle = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("EnumParticle");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, enumParticle, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
-               }
+               enumParticle = ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES.getClass("ParticleType");
+               packetConstructor = ReflectionUtils.getConstructor(packetClass, enumParticle, boolean.class, boolean.class, double.class, double.class, double.class, float.class, float.class, float.class, float.class, int.class);
             } catch (Exception var3) {
                throw new ParticleEffect.ParticlePacket.VersionIncompatibleException("Your current bukkit version seems to be incompatible with this library", var3);
             }
