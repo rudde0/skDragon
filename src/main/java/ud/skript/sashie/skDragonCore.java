@@ -152,6 +152,10 @@ public class skDragonCore extends JavaPlugin {
       return skdragoncore;
    }
 
+   public static SkriptAddon getAddonInstance() {
+      return skdragoncore.addon;
+   }
+
    public static File getFolder() {
       return skdragoncore.getDataFolder();
    }
