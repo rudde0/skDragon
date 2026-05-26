@@ -7,8 +7,8 @@ plugins {
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
-def ver = 6
-def mcver = '1.21.1'
+def ver = 8
+def mcver = '1.21.5'
 def javaVer = JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility = javaVer
 
@@ -19,7 +19,9 @@ description = name
 repositories {
     flatDir {dirs 'libs'}
     mavenLocal()
-    maven {url 'https://papermc.io/repo/repository/maven-public/'}
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
     maven {url 'https://oss.sonatype.org/content/groups/public/'}
     maven {url 'https://maven.enginehub.org/repo/'}
     maven {url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}

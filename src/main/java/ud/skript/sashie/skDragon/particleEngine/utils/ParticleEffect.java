@@ -1152,24 +1152,16 @@ public enum ParticleEffect {
                version = ReflectionUtils.PackageType.getServerVersionMinor();
                getHandle = ReflectionUtils.getMethod("CraftPlayer", ReflectionUtils.PackageType.CRAFTBUKKIT_ENTITY, "getHandle");
 
-               Class packetClass, packet;
-               if(version < 17){
-                  packetClass = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass(version < 7 ? "Packet63WorldParticles" : "PacketPlayOutWorldParticles");
-                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("EntityPlayer"));
-                  playerConnectionIndex = playerConnection.getIndex("playerConnection");
-                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("PlayerConnection"));
-                  packet = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("Packet");
-               }else{
-                  packetClass = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL_GAME.getClass("PacketPlayOutWorldParticles");
-                  playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("ServerPlayer"));
-                  try {
-                     playerConnectionIndex = playerConnection.getIndex("c");
-                  } catch (Exception ignored) {
-                     playerConnectionIndex = playerConnection.getIndex("connection");
-                  }
-                  sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("ServerPlayerConnection"));
-                  packet = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL.getClass("Packet");
+               Class<?> packetClass, packet;
+               packetClass = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL_GAME.getClass("ClientboundLevelParticlesPacket");
+               playerConnection = FieldAccess.get(ReflectionUtils.PackageType.MINECRAFT_LEVEL.getClass("ServerPlayer"));
+               try {
+                  playerConnectionIndex = playerConnection.getIndex("c");
+               } catch (Exception ignored) {
+                  playerConnectionIndex = playerConnection.getIndex("connection");
                }
+               sendPacket = MethodAccess.get(ReflectionUtils.PackageType.MINECRAFT_SERVER_NETWORK.getClass("ServerPlayerConnection"));
+               packet = ReflectionUtils.PackageType.MINECRAFT_NETWORK_PROTOCOL.getClass("Packet");
 
                try {
                   sendPacketIndex = sendPacket.getIndex("b", packet);
@@ -1177,20 +1169,8 @@ public enum ParticleEffect {
                   sendPacketIndex = sendPacket.getIndex("send", packet);
                }
 
-
-               Class particleParam;
-               if(version >= 15){
-                  enumParticle = ReflectionUtils.PackageType.CRAFTBUKKIT.getClass("CraftParticle");
-                  particleParam = ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES.getClass("ParticleParam");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, particleParam, Boolean.class, Double.class, Double.class, Double.class, Float.class, Float.class, Float.class, Float.class, Integer.class);
-               } else if (version >= 13) {
-                  enumParticle = ReflectionUtils.PackageType.CRAFTBUKKIT.getClass("CraftParticle");
-                  particleParam = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("ParticleParam");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, particleParam, Boolean.class, Float.class, Float.class, Float.class, Float.class, Float.class, Float.class, Float.class, Integer.class);
-               } else {
-                  enumParticle = ReflectionUtils.PackageType.MINECRAFT_SERVER.getClass("EnumParticle");
-                  packetConstructor = ReflectionUtils.getConstructor(packetClass, enumParticle, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
-               }
+               enumParticle = ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES.getClass("ParticleType");
+               packetConstructor = ReflectionUtils.getConstructor(packetClass, enumParticle, boolean.class, boolean.class, double.class, double.class, double.class, float.class, float.class, float.class, float.class, int.class);
             } catch (Exception var3) {
                throw new ParticleEffect.ParticlePacket.VersionIncompatibleException("Your current bukkit version seems to be incompatible with this library", var3);
             }
@@ -1231,11 +1211,8 @@ public enum ParticleEffect {
                         param = ReflectionUtils.getConstructor("ParticleParamRedstone", ReflectionUtils.PackageType.MINECRAFT_SERVER, Float.class, Float.class, Float.class, Float.class)
                                 .newInstance(this.colorData.getR(), this.colorData.getG(), this.colorData.getB(), this.colorData.getSize());
                      }else{
-                        Class vector3faClass = ReflectionUtils.PackageType.MOJANG_MATH.getClass("Vector3f");
-                        Object vector3fa = ReflectionUtils.getConstructor(vector3faClass, Float.class, Float.class, Float.class)
-                                .newInstance(this.colorData.getR(), this.colorData.getG(), this.colorData.getB());
-                        param = ReflectionUtils.getConstructor("ParticleParamRedstone", ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES, vector3faClass, Float.class)
-                                .newInstance(vector3fa, this.colorData.getSize());
+                        param = ReflectionUtils.getConstructor("DustParticleOptions", ReflectionUtils.PackageType.MINECRAFT_CORE_PARTICLES, int.class, float.class)
+                                .newInstance(colorData.color.getRGB(), this.colorData.getSize());
                      }
                   } else if (this.effect == ParticleEffect.dustcolortransition) {
                      Class vector3faClass = ReflectionUtils.PackageType.MOJANG_MATH.getClass("Vector3f");
@@ -1294,15 +1271,15 @@ public enum ParticleEffect {
                   }
 
                   if (version >= 15) {
-                     this.packet = packetConstructor.newInstance(param, this.longDistance, center.getX(), center.getY(), center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount);
+                     this.packet = packetConstructor.newInstance(param, this.longDistance, true, center.getX(), center.getY(), center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount);
                   } else {
-                     this.packet = packetConstructor.newInstance(param, this.longDistance, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount);
+                     this.packet = packetConstructor.newInstance(param, this.longDistance, true, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount);
                   }
                } else if (this.data != null) {
                   int[] packetData = this.data.getPacketData();
-                  this.packet = packetConstructor.newInstance(enumParticle.getEnumConstants()[this.effect.getID()], this.longDistance, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount, this.effect == ParticleEffect.itemcrack ? packetData : new int[]{packetData[0] | packetData[1] << 12});
+                  this.packet = packetConstructor.newInstance(enumParticle.getEnumConstants()[this.effect.getID()], this.longDistance, true, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount, this.effect == ParticleEffect.itemcrack ? packetData : new int[]{packetData[0] | packetData[1] << 12});
                } else {
-                  this.packet = packetConstructor.newInstance(enumParticle.getEnumConstants()[this.effect.getID()], this.longDistance, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount, new int[0]);
+                  this.packet = packetConstructor.newInstance(enumParticle.getEnumConstants()[this.effect.getID()], this.longDistance, true, (float)center.getX(), (float)center.getY(), (float)center.getZ(), this.offsetX, this.offsetY, this.offsetZ, this.speed, this.amount, new int[0]);
                }
 
             } catch (Exception var9) {

@@ -19,7 +19,7 @@ public final class ReflectionUtils {
 
       for(int i = 0; i < length; ++i) {
          Constructor constructor = constructors[i];
-         if (ReflectionUtils.DataType.compare(ReflectionUtils.DataType.getPrimitive(constructor.getParameterTypes()), primitiveTypes)) {
+         if (DataType.compare(ReflectionUtils.DataType.getPrimitive(constructor.getParameterTypes()), primitiveTypes)) {
             return constructor;
          }
       }
